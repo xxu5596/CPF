@@ -1,18 +1,26 @@
-name: cpf
-
+name: combined
 channels:
   - pytorch
+  - fvcore
+  - iopath
   - conda-forge
+  - pytorch3d
   - defaults
-
 dependencies:
   - python==3.8.10
   - pytorch==1.8.1
   - torchvision==0.9.1
   - cudatoolkit==11.1.1
+
+  - fvcore
+  - iopath
+  - pytorch3d
+  - pip
+  - git 
+
   - cython==0.29.21
-  - pip=20.0.2
-  - numpy>=1.18
+  - pip
+  - numpy==1.23.2
   - scipy>=0.19.1
   - matplotlib~=3.1.3
   - pillow~=7.1.2
@@ -25,10 +33,23 @@ dependencies:
       - open3d==0.10.0.0
       - pyrender==0.1.43
       - scikit-learn==0.23.2
-      - chumpy==0.69
-      - opencv-python==4.2.0.34
-      - opencv-contrib-python==4.2.0.34
-      - opendr==0.78
+      - git+https://github.com/scottandrews/chumpy.git@fe51783e0364bf1e9b705541e7d77f894dd2b1ac
+      - opencv-python
+      - opencv-contrib-python
+
+      - https://data.pyg.org/whl/torch-1.8.0%2Bcu111/torch_cluster-1.5.9-cp38-cp38-linux_x86_64.whl
+      - https://data.pyg.org/whl/torch-1.8.0%2Bcu111/torch_scatter-2.0.8-cp38-cp38-linux_x86_64.whl
+      - https://data.pyg.org/whl/torch-1.8.0%2Bcu111/torch_sparse-0.6.9-cp38-cp38-linux_x86_64.whl
+      - https://data.pyg.org/whl/torch-1.8.0%2Bcu111/torch_spline_conv-1.2.1-cp38-cp38-linux_x86_64.whl
+      - torch-geometric==1.7.2
+      - git+https://github.com/hassony2/manopth.git
+      # - open3d
+      - tensorboardX
+      - pyquaternion
+      # - trimesh
+      # - transforms3d
+      # - chumpy
+
       - termcolor==1.1.0
       - prettytable
       - transforms3d==0.3.1
