@@ -14,7 +14,7 @@ class CIOnline(CIdata):
             data_path, hodata_path, anchor_path, hodata_use_cache=hodata_use_cache, hodata_center_idx=hodata_center_idx
         )
 
-        # along side with basic CIDumpedQueries, we need some adapt queries
+        # along side with basic CIDumpedQueries(5 CONTACT INFO) , we need some adapt queries
         # for offline eval
         self.queries.update(
             {
@@ -34,6 +34,7 @@ class CIOnline(CIdata):
                 CIAdaptQueries.OBJ_VOXEL_POINTS_CAN,
                 CIAdaptQueries.OBJ_VOXEL_EL_VOL,
                 CIAdaptQueries.IMAGE_PATH,
+                
                 CIDumpedQueries.OBJ_VERTS_3D,
                 CIDumpedQueries.OBJ_TSL,
                 CIDumpedQueries.OBJ_ROT,
@@ -41,8 +42,8 @@ class CIOnline(CIdata):
                 CIDumpedQueries.HAND_JOINTS_3D,
                 CIDumpedQueries.HAND_SHAPE,
                 CIDumpedQueries.HAND_TSL,
-                CIDumpedQueries.HAND_ROT,
-                CIDumpedQueries.HAND_POSE,
+                CIDumpedQueries.HAND_ROT,   #(1,3)
+                CIDumpedQueries.HAND_POSE,  #(16,3)
             }
         )
 
@@ -71,3 +72,4 @@ class CIOnline(CIdata):
         with open(dumped_file_path, "rb") as bytestream:
             dumped_pose_dict = pickle.load(bytestream)
         return dumped_pose_dict
+
