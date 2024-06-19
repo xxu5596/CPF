@@ -22,14 +22,15 @@ class CIdata(ABC):
 
     @staticmethod
     def match_and_construct(in_string, hodata_path, use_cache, center_idx):
+        # in_string = 'data_path': either ...HO3D... or ...fhbhands...
         fhb_flag = fhb_tester.search(in_string)
         if fhb_flag is not None:
             fhb_matches = fhb_extractor.fullmatch(in_string)
             if fhb_matches is None:
                 raise NameError(f"{CIdata.__name__}: parse string error, trying to parse as fhb, in string{in_string}")
 
-            ci_prefix = fhb_matches.group(1)
-            data_split = fhb_matches.group(2)
+            ci_prefix = fhb_matches.group(1) # 
+            data_split = fhb_matches.group(2)   
             split_mode = fhb_matches.group(3)
             if fhb_matches.group(4) == "1":
                 mini_factor = 1
@@ -91,18 +92,19 @@ class CIdata(ABC):
             ho3d_matches = ho3d_extractor.fullmatch(in_string)
             if ho3d_matches is None:
                 raise NameError(f"{CIdata.__name__}: parse string error, trying to parse as ho3d, in string{in_string}")
-
-            ci_prefix = ho3d_matches.group(1)
-            data_split = ho3d_matches.group(2)
-            split_mode = ho3d_matches.group(3)
-            if ho3d_matches.group(4) == "1":
+            #re.compile(r"^(.*)\/HO3D\/(.*)_(.*)_mf([0-9]*\.?[0-9]*)_likev1(.*)_fct([0-9]*\.?[0-9]*|\(x\))_ec(.*)")
+            # common/picr_ho3dofficial/HO3D/test_official_mf1_likev1_fct\(x\)_ec/
+            ci_prefix = ho3d_matches.group(1)   # common/picr_ho3dofficial
+            data_split = ho3d_matches.group(2)  # test
+            split_mode = ho3d_matches.group(3)  # official
+            if ho3d_matches.group(4) == "1":    # 1
                 mini_factor = 1
             else:
                 mini_factor = float(ho3d_matches.group(4))
 
-            like_v1 = ho3d_matches.group(5) == ""
+            like_v1 = ho3d_matches.group(5) == ""  # ""
 
-            filter_contact_flag = ho3d_matches.group(6)
+            filter_contact_flag = ho3d_matches.group(6) # (x)
             if filter_contact_flag == "(x)":
                 filter_no_contact = False
                 filter_thresh = -1.0
@@ -110,7 +112,7 @@ class CIdata(ABC):
                 filter_no_contact = True
                 filter_thresh = float(filter_contact_flag)
 
-            enable_contact = ho3d_matches.group(7) == ""
+            enable_contact = ho3d_matches.group(7) == ""   # ""
 
             logger.info(
                 (
@@ -128,9 +130,9 @@ class CIdata(ABC):
             target_dataset = HOdata.get_dataset(
                 "ho3d",
                 data_root=hodata_path,
-                data_split=data_split,
-                split_mode=split_mode,
-                use_cache=use_cache,
+                data_split=data_split,#test
+                split_mode=split_mode,#official
+                use_cache=use_cache, #default true
                 mini_factor=mini_factor,
                 center_idx=center_idx,
                 enable_contact=enable_contact,
@@ -150,9 +152,9 @@ class CIdata(ABC):
     ):
         super().__init__()
         logger.info(f"{self.__class__.__name__}:", "cyan")
-        self.data_path = data_path
-        self.hodata_path = hodata_path
-        self.anchor_path = anchor_path
+        self.data_path = data_path       #common/picr_ho3dofficial/HO3D/test_official_mf1_likev1_fct\(x\)_ec/
+        self.hodata_path = hodata_path   #'data'   : HO3D,YCB_models,YCB_models_supp...
+        self.anchor_path = anchor_path   #assets/anchor
         (
             self.anchor_face_vertex_index,
             self.anchor_weights,
@@ -168,17 +170,17 @@ class CIdata(ABC):
         # ==================== match and extract information from data_path >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         # ==================== construct dataset accordingly >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         self.hodataset = self.match_and_construct(self.data_path, self.hodata_path, hodata_use_cache, hodata_center_idx)
-        self.hodataset_type = self.hodataset.name
+        self.hodataset_type = self.hodataset.name  # self.name = "HO3D"
         # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
         # ==================== cache pkl paths >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         self._file_list = list(os.listdir(self.data_path))
         self.file_list = set()
         for x in self._file_list:
-            res = id_extractor.match(x)
+            res = id_extractor.match(x)      #id_extractor = re.compile(r"^([0-9]+).*$")
             if res is None:
                 raise RuntimeError(f"{res} matches failed! illegal name for intermediate file")
-            self.file_list.add(int(res.group(1)))
+            self.file_list.add(int(res.group(1)))     # add index into set(), repeat value is only counted once
         assert len(self.file_list) == len(
             self.hodataset
         ), f"dataset length unmatched: {len(self.file_list)}, {len(self.hodataset)}"
@@ -359,3 +361,4 @@ class CIdata(ABC):
         # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
         return sample
+
